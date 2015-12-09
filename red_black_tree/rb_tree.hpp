@@ -192,8 +192,6 @@ public:
     void left_rotate(cNode<T>*);//rotar derecha
     void insert_fix(cNode<T>*);//arreglar el insert
     bool get_color(cNode<T>*);//obtener el color del nodo
-    void transplant(cNode<T>*,cNode<T>*);
-    cNode<T> * tree_minimium(cNode<T>*);
     
     //metodos de impresion
     void printTree(cNode<T>*);
@@ -231,8 +229,8 @@ template<class Tr>
 bool RB_Tree<Tr>::insert(T x){
     stack<cNode<T>*> path;
     cNode<T> ** y;
-    cNode<T> * p;
-    if (find(x, y,path)) return 0;
+    cNode<T> *  p;
+    if (find(x, y, path)) return 0;
     if (!path.empty())
         p = path.top();
     else p = NIL;
@@ -331,29 +329,6 @@ bool RB_Tree<Tr>::remove(T x){
     if (*p) (*p)->p = pa;
     // eliminamos el nodo
     delete t;
-    
-    
-    /*
-    cout << "z: " << z->m_data << endl;
-    if (!z->m_child[0])
-        transplant(z, z->m_child[1]);//transplantamos su hijo der.
-    else if (!z->m_child[1]) transplant(z, z->m_child[0]);
-    else{
-        y = tree_minimium(z->m_child[1]);
-        if (y->p != z) {
-            transplant(y, y->m_child[1]);
-            y->m_child[1] = z->m_child[1];
-            y->m_child[1]->p = y;
-        }
-        transplant(z, y);
-        y->m_child[0] = z->m_child[0];
-        y->m_child[0]->p = y;
-    }*/
-    
-    
-    
-    
-    
     return 1;
 }
 
@@ -376,19 +351,6 @@ void RB_Tree<Tr>::right_rotate(cNode<T> * y)
     else y->p->m_child[0] = x;// el padre cambia de hijo izq. a 'x'
     x->m_child[1] = y;// el hijo Der. de 'x' ahora apunta a 'y'
     y->p = x; // el padre de 'y' ahora es 'x'
-    
-    /*
-    if (!s.empty()) s.pop();//sacamos al nodo p del stack
-    if (!s.empty()){
-        cNode<T> * father = s.top();//guardamos al padre de y
-        //si la raiz cambia la actualizamos
-        if (father->m_child[0]->m_data == y->m_data) father->m_child[0] = y->m_child[0];
-        else father->m_child[1] = y->m_child[0];}//el padre ahora apunta al hijo de y
-    else m_root = y->m_child[0];//si y es la raiz
-    cNode<T> * x = y->m_child[0];//guardamos el hijo izq de y
-    cNode<T> * b = y->m_child[0]->m_child[1];//guardamos el hijo der. del hijo izq. de y
-    y->m_child[0]->m_child[1] = y;//el hijo der. de y, ahora apunta a y
-    y->m_child[0]             = b;//el hijo izq. de y, apunta a b*/
 }
 
 
@@ -409,18 +371,6 @@ void RB_Tree<Tr>::left_rotate(cNode<T> * x)
     else x->p->m_child[1] = y;// el padre cambia de hijo der. a 'y'
     y->m_child[0] = x;// el hijo izq. de 'y' ahora apunta a x
     x->p = y; // el padre de 'x' ahora es 'y'
-    /*
-    if (!s.empty()) s.pop();//sacamos al nodo x del stack
-    if (!s.empty()){
-        cNode<T> * father = s.top();//guardamos al padre de x
-        //si la raiz cambia la actualizamos
-        if (father->m_child[0]->m_data == x->m_data) father->m_child[0] = x->m_child[1];
-        else father->m_child[1] = x->m_child[1];}//el padre ahora apunta al hijo der. de x
-    else m_root = x->m_child[1];//si x es la raiz
-    cNode<T> * y = x->m_child[1];//guardamos el hijo der de x
-    cNode<T> * b = x->m_child[1]->m_child[0];//guardamos el hijo der. del hijo izq. de x
-    x->m_child[1]->m_child[0] = x;//el hijo izq. de x, ahora apunta a x
-    x->m_child[1]             = b;//el hijo der. de x, apunta a a b*/
 }
 
 template<class Tr>
@@ -432,36 +382,6 @@ bool RB_Tree<Tr>::get_color(cNode<T> * x)
     else return x->color;
 }
 
-//reemplaza uno de los hijos del padre de 'u' con 'v'
-template<class Tr>
-void RB_Tree<Tr>::transplant(cNode<T> * u, cNode<T> * v)
-{
-    cout << "u: " << u->m_data << "v: " << v->m_data;
-    // si 'u' es la raiz, entonces 'v' es la nueva raiz
-    if (u->p==NIL) m_root = v;
-    // si 'u' es el hijo izquierdo
-    if(u==u->p->m_child[0])
-        u->p->m_child[0] = v;//transplantamos 'v' como hijo izq. del padre de 'u'
-    else//si 'u' es el hijo derecho
-        u->p->m_child[1] = v;//transplantamos 'v' como hijo der. del padre de 'u'
-    //actualizamos el padre de 'v' como el padre de 'u'
-    /*
-    if (v!=NIL) {
-        v->p = u->p;
-    }*/
-    if(v->p && v->p!=NIL)
-        v->p = u->p;
-}
-
-
-template<class Tr>
-cNode<typename Tr::U> * RB_Tree<Tr>::tree_minimium(cNode<T> * x)
-{
-    while (x->m_child[0]!=0) {
-        x = x->m_child[0];
-    }
-    return x;
-}
 
 //imprimir arbol en inorden
 template<class Tr>
@@ -489,7 +409,6 @@ void RB_Tree<Tr>::printTreeAmplitud(cNode<T> * p)
         if(t->m_child[1]) l.push_back(t->m_child[1]);
         cout << endl;
     }
-    
 }
 
 //imprimir arbol por amplitud

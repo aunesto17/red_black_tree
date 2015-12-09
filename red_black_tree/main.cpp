@@ -31,11 +31,12 @@ int main(int argc, const char * argv[]) {
     
     cout << prueba.insert(4) << endl;
     printPretty(prueba.m_root, 1, 0, cout);
+    //prueba.remove(5);
+    prueba.remove(7);
+    printPretty(prueba.m_root, 1, 0, cout);
+    prueba.remove(15);
+    printPretty(prueba.m_root, 1, 0, cout);
     prueba.remove(5);
-    //printPretty(prueba.m_root, 1, 0, cout);
-    //prueba.remove(7);
-    //printPretty(prueba.m_root, 1, 0, cout);
-    //prueba.remove(11);
     
     //cout << prueba.insert(10) << endl;
     //cout << prueba.insert(11) << endl;

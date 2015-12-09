@@ -157,7 +157,7 @@ cNode<T> ** rep(cNode<T> ** p)
     p = &((*p)->m_child[0]);
     while ((*p)->m_child[1])
         p = &((*p)->m_child[1]);
-    cout << "contenido: " << (*p)->m_data << endl;
+    //cout << "contenido: " << (*p)->m_data << endl;
     return p;
 }
 
@@ -189,9 +189,10 @@ public:
     bool remove(T);
     //metodos RED-BLACK
     void right_rotate(cNode<T>*);//rotar izquierda
-    void left_rotate(cNode<T>*);//rotar derecha
-    void insert_fix(cNode<T>*);//arreglar el insert
-    bool get_color(cNode<T>*);//obtener el color del nodo
+    void left_rotate(cNode<T>*); //rotar derecha
+    void insert_fix(cNode<T>*);  //arreglar el insert
+    void remove_fix(cNode<T>*);  //arregla el remove
+    bool get_color(cNode<T>*);   //obtener el color del nodo
     
     //metodos de impresion
     void printTree(cNode<T>*);
@@ -303,17 +304,20 @@ template<class Tr>
 bool RB_Tree<Tr>::remove(T x){
     cout << "dato" << x << endl;
     stack<cNode<T>*> path;
-    cNode<T> ** p,* y;
+    cNode<T> ** p, *y, *ex;
     if (!find(x, p, path)) return 0;
-    //si el nodo no tiene hijo izq.
     cNode<T> * z = (*p);
-    
-    bool original_color = (*p)->color;
-    
+    //'y' apunta a 'z'
+    y = z;
+    //guardamos el color original de 'y'
+    bool orig_color = y->color;
     // Caso 2:tiene 2 hijos
     if ((*p)->m_child[0] && (*p)->m_child[1]) {
         //guardamos en 'q' el reemplazo del nodo a eliminar(rep)
         cNode<T> ** q = rep<T>(p);
+        //actualizamos 'y' y su color
+        y = (*q);
+        orig_color = y->color;
         //hacemos un swap entre los datos de 'p' y 'q'
         (*p)->m_data = (*q)->m_data;
         //el doble puntero 'p' ahora es igual a 'q'
@@ -323,13 +327,89 @@ bool RB_Tree<Tr>::remove(T x){
     cNode<T> * t = *p;
     //guardamos el padre del nodo a eliminar
     cNode<T> * pa = t->p;
+    // asignamos a 'ex' el hijo que queda
+    ex = (*p)->m_child[(*p)->m_child[1]!=0];
+    if (!ex) {//si no quedan hijos entonces ex es NIL y se actualiza su padre
+        ex = NIL;
+        NIL->p = pa;
+    }
     // Caso 1:tiene 1 hijo
     *p = (*p)->m_child[(*p)->m_child[1]!=0];
     // actualizamos el padre del nuevo contenido de 'p'
     if (*p) (*p)->p = pa;
     // eliminamos el nodo
     delete t;
+    // si se elimino un nodo negro, se pueden violar propiedades
+    if (orig_color) remove_fix(ex);
     return 1;
+}
+
+//remove fixup
+template<class Tr>
+void RB_Tree<Tr>::remove_fix(cNode<T> * x)
+{
+    cNode<T> * w;
+    //mientras que 'x' no sea la RAIZ y sea negra
+    while (x!=m_root && x->color==true) {
+        if (x == x->p->m_child[0]) {//Si 'x' es hijo izquierdo
+            w = x->p->m_child[1];   // 'w' apunta al hermano de 'x'
+            //CASO 1: si 'w' es rojo
+            if (!get_color(w)) {    //
+                w->color    = true; // a negro
+                x->p->color = false;// padre de 'x' a rojo
+                left_rotate(x->p);  // rotacion a la izq. con el padre de 'x'
+                // 'w' ahora apunta al nuevo hermano de 'x'
+                w = x->p->m_child[1];}
+            //CASO 2: Los hijos de 'w' son negros ('w' es negro)
+            if (get_color(w->m_child[0]) && get_color(w->m_child[1])) {
+                w->color = false;   // a rojo
+                x = x->p;}          // 'x' apunta ahora a su padre
+            else{
+                //CASO 3: El hijo der. de 'w' es negro
+                if (get_color(w->m_child[1])){
+                    w->m_child[0]->color = true; // el hijo izq. de 'w' a negro
+                    w->color             = false;// 'w' a rojo
+                    right_rotate(w);        //rotacion der. 'w'
+                    w = x->p->m_child[1];}  // 'w' ahora apunta al hermano de 'x'
+                //CASO 4: El hijo der. de 'w' es rojo
+                // el color de 'w' cambia al color del padre de 'x'
+                w->color            = x->p->color;
+                x->p->color         = true; // el padre de 'x' es negro
+                w->m_child[1]->color= true; // el hijo der. de 'w' es negro
+                left_rotate(x->p);          // rotacion izq. del padre de 'x'
+                x = m_root;}                // 'x' apunta a la raiz
+        }
+        else{ // 'x' es hijo derecho
+            w = x->p->m_child[0];   // 'w' apunta al hermano de 'x'
+            //CASO 1: si 'w' es rojo
+            if (!get_color(w)) {    //
+                w->color    = true; // a negro
+                x->p->color = false;// padre de 'x' a rojo
+                right_rotate(x->p); // rotacion a la der. con el padre de 'x'
+                // 'w' ahora apunta al nuevo hermano de 'x'
+                w = x->p->m_child[0];}
+            //CASO 2: Los hijos de 'w' son negros ('w' es negro)
+            if (get_color(w->m_child[0]) && get_color(w->m_child[1])) {
+                w->color = false;   // a rojo
+                x = x->p;}          // 'x' apunta ahora a su padre
+            else{
+                //CASO 3: El hijo izq. de 'w' es negro
+                if (get_color(w->m_child[0])){
+                    w->m_child[1]->color = true; // el hijo der. de 'w' a negro
+                    w->color             = false;// 'w' a rojo
+                    left_rotate(w);         // rotacion izq. 'w'
+                    w = x->p->m_child[0];}  // 'w' ahora apunta al hermano de 'x'
+                //CASO 4: El hijo der. de 'w' es rojo
+                // el color de 'w' cambia al color del padre de 'x'
+                w->color            = x->p->color;
+                x->p->color         = true; // el padre de 'x' es negro
+                w->m_child[0]->color= true; // el hijo der. de 'w' es negro
+                right_rotate(x->p);         // rotacion izq. del padre de 'x'
+                x = m_root;}                // 'x' apunta a la raiz
+            
+        }
+    }
+    x->color = true;//al final 'x' es negro
 }
 
 

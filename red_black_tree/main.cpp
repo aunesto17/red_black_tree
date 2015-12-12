@@ -12,31 +12,33 @@ int main(int argc, const char * argv[]) {
     
     RB_Tree<RBTreeTrait<int>> prueba;
     
-    cout << prueba.insert(11) << endl;
-    //cout << "padre: " << prueba.m_root->p->m_data << endl;
-    cout << prueba.insert(2) << endl;
-    //printPretty(prueba.m_root, 1, 0, cout);
-    cout << prueba.insert(14) << endl;
-    //printPretty(prueba.m_root, 1, 0, cout);
-    cout << prueba.insert(1) << endl;
-    //printPretty(prueba.m_root, 1, 0, cout);
     cout << prueba.insert(7) << endl;
-    //printPretty(prueba.m_root, 1, 0, cout);
-    cout << prueba.insert(15) << endl;
+    //cout << "padre: " << prueba.m_root->p->m_data << endl;
+    cout << prueba.insert(6) << endl;
     //printPretty(prueba.m_root, 1, 0, cout);
     cout << prueba.insert(5) << endl;
     //printPretty(prueba.m_root, 1, 0, cout);
-    cout << prueba.insert(8) << endl;
-    
-    
     cout << prueba.insert(4) << endl;
+    //printPretty(prueba.m_root, 1, 0, cout);
+    cout << prueba.insert(3) << endl;
+    //printPretty(prueba.m_root, 1, 0, cout);
+    cout << prueba.insert(2) << endl;
+    //printPretty(prueba.m_root, 1, 0, cout);
+    cout << prueba.insert(1) << endl;
     printPretty(prueba.m_root, 1, 0, cout);
-    //prueba.remove(5);
+    //cout << prueba.insert(8) << endl;
+    
+    
+    //cout << prueba.insert(9) << endl;
+    //cout << prueba.insert(10) << endl;
+    
+    prueba.remove(1);
+    printPretty(prueba.m_root, 1, 0, cout);
     prueba.remove(7);
-    printPretty(prueba.m_root, 1, 0, cout);
-    prueba.remove(15);
-    printPretty(prueba.m_root, 1, 0, cout);
+    //printPretty(prueba.m_root, 1, 0, cout);
     prueba.remove(5);
+    //printPretty(prueba.m_root, 1, 0, cout);
+    //prueba.remove(5);
     
     //cout << prueba.insert(10) << endl;
     //cout << prueba.insert(11) << endl;

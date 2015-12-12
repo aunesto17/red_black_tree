@@ -47,7 +47,9 @@ public:
     cNode<T> * p;
     cNode(){
         color = 1;
-        p     = nullptr;};
+        p     = nullptr;
+        m_child[0] = m_child[1] = nullptr;
+        m_data = -1;};
     cNode(T x,cNode<T> * f){
         m_data = x;
         m_child[0] = m_child[1] = nullptr;
@@ -333,13 +335,25 @@ bool RB_Tree<Tr>::remove(T x){
         ex = NIL;
         NIL->p = pa;
     }
+    cout << "padre: " << pa->m_data << endl;
+    cout << "ex   : " << ex->m_data << endl;
     // Caso 1:tiene 1 hijo
-    *p = (*p)->m_child[(*p)->m_child[1]!=0];
+    if (!((*p)->m_child[0]) && !((*p)->m_child[1]) && orig_color) {
+        *p = NIL;
+    }
+    else
+        *p = (*p)->m_child[(*p)->m_child[1]!=0];
     // actualizamos el padre del nuevo contenido de 'p'
     if (*p) (*p)->p = pa;
+    cout << endl;
+    cout << "padre: " << pa->m_data << endl;
+    cout << "ex   : " << ex->m_data << endl;
+
     // eliminamos el nodo
     delete t;
     // si se elimino un nodo negro, se pueden violar propiedades
+    cout << "color de ex: " << orig_color << endl;
+    //printPretty(m_root, 2, 20, cout);
     if (orig_color) remove_fix(ex);
     return 1;
 }
@@ -362,7 +376,7 @@ void RB_Tree<Tr>::remove_fix(cNode<T> * x)
                 w = x->p->m_child[1];}
             //CASO 2: Los hijos de 'w' son negros ('w' es negro)
             if (get_color(w->m_child[0]) && get_color(w->m_child[1])) {
-                w->color = false;   // a rojo
+                w->color = false;   // a rojox
                 x = x->p;}          // 'x' apunta ahora a su padre
             else{
                 //CASO 3: El hijo der. de 'w' es negro
@@ -410,6 +424,11 @@ void RB_Tree<Tr>::remove_fix(cNode<T> * x)
         }
     }
     x->color = true;//al final 'x' es negro
+    cout << "x: " << x->m_data << endl;
+    if (x->m_child[0]==NIL) {
+        x->m_child[0] = nullptr;}
+    if (x->m_child[1]==NIL) {
+        x->m_child[1] = nullptr;}
 }
 
 
